@@ -11,8 +11,8 @@ const LoginPage = () => {
     return (
         <Box sx={{height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", }}>
             <div className='p-5' style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", width: "550px", gap: "15px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0,0,0,.1)" }}>
-                <h1>Sign in</h1>
-                <InputTextField />
+                <h2>Sign in</h2>
+                <InputTextField label={"Email"} />
                 <PasswordField />
                 <FormGroup sx={{width: '100%' }}>
                     <FormControlLabel control={<Checkbox />} label="Remember me" />
@@ -57,7 +57,7 @@ const LoginPage = () => {
                     type={"submit"}
                     borderRadius={"12px"}
                 />
-                <Typography>Don't have an account?  <Link href="#" color="inherit">
+                <Typography>Don't have an account?{" "}<Link href="#" color="inherit">
                     Sign up
                 </Link></Typography>
 
