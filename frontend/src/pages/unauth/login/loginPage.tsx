@@ -9,11 +9,11 @@ import { Link, Divider, Typography, Checkbox } from '@mui/material';
 
 const LoginPage = () => {
     return (
-        <Box sx={{height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", }}>
+        <Box className="my-4" sx={{height: "100%", display: "flex", alignItems: "center", justifyContent: "center", }}>
             <div className='p-5' style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", width: "550px", gap: "15px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0,0,0,.1)" }}>
                 <h2>Sign in</h2>
                 <InputTextField label={"Email"} />
-                <PasswordField />
+                <PasswordField label={"Password"}/>
                 <FormGroup sx={{width: '100%' }}>
                     <FormControlLabel control={<Checkbox />} label="Remember me" />
                 </FormGroup>
@@ -57,7 +57,7 @@ const LoginPage = () => {
                     type={"submit"}
                     borderRadius={"12px"}
                 />
-                <Typography>Don't have an account?{" "}<Link href="#" color="inherit">
+                <Typography>Don't have an account?{" "}<Link href="signup" color="inherit">
                     Sign up
                 </Link></Typography>
 
