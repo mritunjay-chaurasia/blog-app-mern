@@ -10,7 +10,7 @@ import 'react-phone-input-2/lib/style.css'
 import { useState } from 'react';
 import { useValidateMessage } from '../../../customHooks/useValidateMsg';
 import DisplayErrorMessage from '../../../components/DisplayErrorMessage';
-// import { signup } from '../../../apis/user';
+import { signup } from '../../../apis/user';
 import { useNavigate } from 'react-router-dom';
 
 const SignupPage = () => {
