@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: () => `usr_${crypto.randomBytes(4).toString('hex')}`
     },
-    name: {
+    fullName: {
         type: String,
         required: true
     },
@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema({
     userStatus: {
         type: String,
         default: 'active'
+    },
+    isUpdateEmail: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

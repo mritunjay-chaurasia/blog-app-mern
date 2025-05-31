@@ -12,12 +12,12 @@ const hashPassword = (password) => {
 
 
 const register = async (req, res) => {
-    const { name, email, phoneNumber, gender, password } = req.body
+    const { fullName, email, phone, gender, password, isUpdateEmail } = req.body
     try {
-        if (!name || !email || !phoneNumber || !gender || !password) {
+        if (!fullName || !email || !phone || !gender || !password) {
             return res.status(400).json({
                 success: false,
-                message: "All fields are required (name, email, phoneNumber, gender, password).",
+                message: "All fields are required (fullName, email, phone, gender, password).",
             })
         }
         const existingUser = await User.findOne({ email });
@@ -31,11 +31,12 @@ const register = async (req, res) => {
 
         const hashedPassword = hashPassword(password);
         const userData = {
-            name,
+            fullName,
             email,
-            phoneNumber,
+            phone,
             gender,
             password: hashedPassword,
+            isUpdateEmail,
         };
         const user = await User.create(userData)
         const token = await generateAccessToken(user._id)
