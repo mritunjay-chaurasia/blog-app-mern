@@ -7,13 +7,17 @@ connectDB()
 const rotuer = require('./routers/index');
 const PORT = process.env.PORT || 5000
 const HOST_NAME = process.env.HOST_NAME
-// cors allow access data from one port to another port
+// cors allow access data from one domain to another domain
 const cors = require('cors');
 app.use(express.urlencoded({ extended: true }));
 
+// corsOptions allows requests only from the domain specified 
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+}
 // Middleware to parse JSON requests
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use('/api', rotuer);
 
 app.get('/', (req, res) => {
