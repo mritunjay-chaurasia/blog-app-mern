@@ -57,7 +57,7 @@ const ResetPassword = () => {
 
     return (
         <Box sx={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", }}>
-            <div className='p-5' style={{ display: "flex", alignItems: "center", justifyContent: "start", flexDirection: "column", width: "550px", gap: "15px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0,0,0,.1)" }}>
+            <Box className='p-5' style={{ display: "flex", alignItems: "center", justifyContent: "start", flexDirection: "column", width: "550px", gap: "15px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0,0,0,.1)" }}>
                 <h2>Reset Password</h2>
                 <PasswordField handleOnChange={(e) => setCredential((prev) => ({ ...prev, password: e.target.value }))} name={'password'} label={"Password"} />
                 {errorsMsg?.password && <DisplayErrorMessage msg={errorsMsg?.password} />}
@@ -77,7 +77,7 @@ const ResetPassword = () => {
                     handleSubmit={handleSubmit}
                     disabled={false}
                 />
-            </div>
+            </Box>
         </Box>
     )
 }

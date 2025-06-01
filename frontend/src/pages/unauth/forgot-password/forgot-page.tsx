@@ -25,7 +25,7 @@ const ForgotPassword = () => {
 
     return (
         <Box sx={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", }}>
-            <div className='p-5' style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", width: "550px", gap: "15px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0,0,0,.1)" }}>
+            <Box className='p-5' style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", width: "550px", gap: "15px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0,0,0,.1)" }}>
                 <h2>Forgot Password</h2>
                 <InputTextField name={'email'} value={email} handleOnChange={(e) => setEmail(e.target.value)} label={"Email Address"} />
                 <CustomButton
@@ -40,7 +40,7 @@ const ForgotPassword = () => {
                     handleSubmit={handleSubmit}
                     disabled={false}
                 />
-            </div>
+            </Box>
         </Box>
     )
 }
