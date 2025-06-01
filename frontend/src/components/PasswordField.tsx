@@ -6,8 +6,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-const PasswordField = ({ label, handleOnChange,name }) => {
+import HttpsIcon from '@mui/icons-material/Https';
+const PasswordField = ({ label, handleOnChange, name }) => {
     const [showPassword, setShowPassword] = React.useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -23,7 +23,7 @@ const PasswordField = ({ label, handleOnChange,name }) => {
         <FormControl sx={{ width: '100%' }} variant="outlined">
             <InputLabel htmlFor="outlined-adornment-password">{label}</InputLabel>
             <OutlinedInput
-                id="outlined-adornment-password"
+                id={label}
                 type={showPassword ? 'text' : 'password'}
                 onChange={handleOnChange}
                 name={name}
@@ -42,7 +42,13 @@ const PasswordField = ({ label, handleOnChange,name }) => {
                         </IconButton>
                     </InputAdornment>
                 }
-                label="Password"
+                label={label}
+                placeholder={label}
+                startAdornment={
+                    <InputAdornment position="start">
+                        <HttpsIcon />
+                    </InputAdornment>
+                }
             />
         </FormControl>
     )

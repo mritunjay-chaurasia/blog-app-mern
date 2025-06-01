@@ -1,7 +1,5 @@
 import axios from 'axios';
-
-const apiUrl = import.meta.env.VITE_API_URL;
-const access_token = import.meta.env.VITE_ACCESS_TOKEN;
+import { apiUrl, access_token } from '../constant';
 
 const clientApis = axios.create({
     baseURL: apiUrl
@@ -10,16 +8,14 @@ const clientApis = axios.create({
 // Add a request interceptor
 clientApis.interceptors.request.use(
     config => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem(access_token);
         if (token) {
             config.headers.Authorization = `Bearer ${token}`
         }
         return config
     },
-    error => {
-        Promise.reject(error)
-    }
-)
+    (error) => Promise.reject(error)
+);
 
 // Add a response interceptor
 clientApis.interceptors.response.use(
@@ -28,17 +24,14 @@ clientApis.interceptors.response.use(
     },
     function (error) {
         const originalRequest = error.config
-        localStorage.removeItem(access_token)
         console.log("Original Request>>>>>>>>>>>> error", error)
-        window.location = '/login'
 
-        // if (
-        //     error.response.status === 401 &&
-        //     originalRequest.url === 'http://127.0.0.1:3000/v1/auth/token'
-        // ) {
-        //     router.push('/login')
-        //     return Promise.reject(error)
-        // }
+        if (error?.response?.status === 401 && error?.response?.data?.message === 'Token expired') {
+            console.warn("Token expired. Redirecting to login.");
+            localStorage.removeItem(access_token);
+            window.location.replace('/login');
+            return Promise.reject(error);
+        }
 
         // if (error.response.status === 401 && !originalRequest._retry) {
         //     originalRequest._retry = true

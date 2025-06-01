@@ -6,8 +6,8 @@ const signup = async (data) => {
         return response.data
     }
     catch (error) {
-        console.error("Error during singup", error)
-        return error?.response?.data
+        const errMsg = error?.response?.data
+        return errMsg
     }
 }
 
@@ -17,49 +17,70 @@ const login = async (data) => {
         return response.data
     }
     catch (error) {
-        console.error("Error during login", error?.response?.data)
-        return error?.response?.message
+        const errMsg = error?.response?.data
+        console.error("Error during login", errMsg)
+        return errMsg
     }
 };
 
-const forgotPassword = async (data) => {
+const forgotPassword = async (email) => {
     try {
-        const response = await clientApis.post('/user/forgot-password', data);
-        if (response?.data) {
-            return response.data
-        } else {
-            return response
-        }
+        const response = await clientApis.post(`/user/forgot-password/${email}`);
+        return response.data
     } catch (err) {
-        console.error("Error during forgot password", err.response)
-        return err.response.data
+        const errMsg = err?.response?.data
+        console.error("Error during forgot password", errMsg)
+        return errMsg
     }
 };
 
 const resetPassword = async (data) => {
     try {
         const response = await clientApis.post('/user/reset-password', data);
-        if (response?.data) {
-            return res.data
-        } else {
-            return response
-        }
+        return response.data
     } catch (err) {
-        console.error("Error during reset password", err.response)
-        return err.response.data
+        const errMsg = err?.response?.data
+        console.error("Error during reset password", errMsg)
+        return errMsg
     }
 };
 
-const deleteAccount = async (id) => {
+const deleteAccount = async () => {
     try {
         const response = await clientApis.delete('/user/delete-account');
         return response?.data
     } catch (err) {
-        console.error("Error during delete account", err.response)
-        return err.response.data
+        const errMsg = err?.response?.data
+
+        console.error("Error during delete account", errMsg)
+        return errMsg
+    }
+}
+
+
+const userInfo = async () => {
+    try {
+        const response = await clientApis.get('/user/user-info');
+        return response?.data
+    } catch (err) {
+        const errMsg = err?.response?.data
+        console.error("Error during fetching user info", errMsg)
+        return errMsg
+    }
+}
+
+
+const allUsers = async () => {
+    try {
+        const response = await clientApis.get('/user/all-users');
+        return response?.data
+    } catch (err) {
+        const errMsg = err?.response?.data
+        console.error("Error during fetching users", errMsg)
+        return errMsg
     }
 }
 
 
 
-export default { signup, login, forgotPassword, resetPassword, deleteAccount }
+export { signup, login, forgotPassword, resetPassword, deleteAccount, userInfo, allUsers }

@@ -12,6 +12,8 @@ import { useValidateMessage } from '../../../customHooks/useValidateMsg';
 import DisplayErrorMessage from '../../../components/DisplayErrorMessage';
 import { signup } from '../../../apis/user';
 import { useNavigate } from 'react-router-dom';
+import { showToast } from '../../../utils/notification';
+import { access_token } from '../../../constant';
 
 const SignupPage = () => {
     const temp = {
@@ -32,6 +34,7 @@ const SignupPage = () => {
         setUserInfo((prev) => ({ ...prev, [name]: value }))
     }
 
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         if (Object.keys(errors).length > 0) {
@@ -41,12 +44,12 @@ const SignupPage = () => {
         // delete userInfo.confirmPassword
         const response = await signup(userInfo);
         if (response?.success) {
-            localStorage.setItem(import.meta.env.VITE_ACCESS_TOKEN, response?.token)
+            showToast("success", response.message)
+            localStorage.setItem(access_token, response?.token)
             navigate('/dashboard')
         } else {
-            console.log("response>>", response.message)
+            showToast("error", response?.message)
         }
-
     }
 
 
@@ -151,7 +154,7 @@ const SignupPage = () => {
                 </Box>
 
                 <Typography className='w-100 text-center my-2'>Already have an account?{" "}
-                    <Link href="/login" color="inherit">
+                    <Link href="/login" color="secondary">
                         Sign in
                     </Link></Typography>
 

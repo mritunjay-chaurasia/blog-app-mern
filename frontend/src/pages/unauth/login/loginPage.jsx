@@ -6,8 +6,13 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Link, Divider, Typography, Checkbox } from '@mui/material';
 import { useState } from 'react';
+import { showToast } from '../../../utils/notification';
+import { login } from '../../../apis/user';
+import { useNavigate } from 'react-router-dom';
+import { access_token } from '../../../constant';
 
 const LoginPage = () => {
+    const navigate = useNavigate();
     const [loginInfo, setLoginInfo] = useState({
         email: "",
         password: ""
@@ -21,15 +26,34 @@ const LoginPage = () => {
         }))
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
+        const { email, password } = loginInfo
+        if (!email && !password) {
+            showToast("error", "Email and  Password is required!")
+            return
+        } else if (email.trim() === "") {
+            showToast("error", "Email is required!")
+            return
+        } else if (password.trim() === "") {
+            showToast("error", " Password is required!")
+            return
+        }
+        const response = await login(loginInfo)
+        if (response?.success) {
+            showToast("success", response.message)
+            localStorage.setItem(access_token, response?.token)
+            navigate('/dashboard')
+        } else {
+            showToast("error", response?.message)
+        }
     }
 
     return (
-        <Box className="my-4" sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", }}>
+        <Box sx={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", }}>
             <div className='p-5' style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", width: "550px", gap: "15px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0,0,0,.1)" }}>
                 <h2>Sign in</h2>
-                <InputTextField name={'email'} value={loginInfo.email} handleOnChange={handleOnChange} label={"Email"} />
+                <InputTextField name={'email'} value={loginInfo.email} handleOnChange={handleOnChange} label={"Email Address"} />
                 <PasswordField name={'password'} handleOnChange={handleOnChange} label={"Password"} />
                 <FormGroup sx={{ width: '100%' }}>
                     <FormControlLabel control={<Checkbox />} label="Remember me" />
@@ -45,9 +69,8 @@ const LoginPage = () => {
                     borderRadius={"12px"}
                     handleSubmit={handleSubmit}
                     disabled={false}
-
                 />
-                <Link href="#" color="inherit">
+                <Link href="/forgot-password" color="secondary">
                     Forgot your password?
                 </Link>
                 <Divider
@@ -83,7 +106,7 @@ const LoginPage = () => {
                     disabled={true}
 
                 />
-                <Typography>Don't have an account?{" "}<Link href="signup" color="inherit">
+                <Typography>Don't have an account?{" "}<Link href="signup" color="secondary">
                     Sign up
                 </Link></Typography>
 
