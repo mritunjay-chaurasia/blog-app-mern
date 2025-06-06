@@ -6,10 +6,10 @@ export const sendGridEmail = (email,subject,subject ,template) => {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         // Create an email object
         const msg = {
-            to: email,
-            from: 'sender@example.com',  // Replace with your verified sender email
+            to:    email,
+            from:  'sender@example.com',  // Replace with your verified sender email
             subject: subject,
-            text: 'This is a test email sent via SendGrid using Node.js!',
+            text:  'This is a test email sent via SendGrid using Node.js!',
             html: template,
         };
         // Send the email
