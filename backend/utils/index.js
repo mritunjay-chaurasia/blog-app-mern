@@ -9,7 +9,7 @@ export const emailSend = async (email, subject, template, context = {}) => {
         const templatePath = path.resolve(`./templates/${template}`);
         let temp = await fs.readFile(templatePath, 'utf-8');
 
-        // Replace placeholders with actual values
+        // Replace placeholders with actual values  
         Object.keys(context).forEach(key => {
             const placeholder = `{{${key}}}`;
             temp = temp.replace(new RegExp(placeholder, 'g'), context[key]);
