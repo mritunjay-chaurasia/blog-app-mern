@@ -131,10 +131,12 @@ const forgotPassword = async (req, res) => {
 }
 
 const sendResetEmail = async (email, link) => {
-    const email = 'fonora9793@acedby.com'
     const subject = "Hello from SendGrid"
-    const template = '<strong>This is a test email sent via SendGrid using Node.js!</strong>'
-    await sendGridEmail(email,subject,template)
+    const template = 'password-reset.html'
+    const context = {
+        reset_link: link
+    }
+    await sendGridEmail(email, subject, template, context)
 }
 
 const resetPassword = async (req, res) => {
