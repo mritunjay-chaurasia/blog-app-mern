@@ -2,9 +2,8 @@ const User = require("../models/auth.model");
 const bcrypt = require('bcryptjs');
 const { generateAccessToken } = require('../middlewares/authorization');
 const crypto = require('crypto');
-const { emailSend } = require('../utils/index');
+const { sendGridEmail } = require('../utils/index');
 const saltRounds = 10;
-
 
 const hashPassword = (password) => {
     const salt = bcrypt.genSaltSync(saltRounds);
@@ -115,10 +114,10 @@ const forgotPassword = async (req, res) => {
         await user.save();
 
         const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-        await passwordResetEmail(user.email, resetUrl);
+        await sendResetEmail(user.email, resetUrl);
         return res.status(200).json({
             success: true,
-            message: "Password reset link sent successfully. Please check your email.",
+            message: "Password reset link sent succesuccessfully. Please check your email.",
             resetUrl
         });
     }
@@ -131,17 +130,11 @@ const forgotPassword = async (req, res) => {
     }
 }
 
-const passwordResetEmail = async (email, reset_link) => {
-    try {
-        const subject = "Reset Your Password";
-        const template = "password_reset.html";
-        const context = {
-            reset_link: reset_link
-        }
-        await emailSend(email, subject, template, context);
-    } catch (error) {
-        console.error(`Error preparing reset password email for ${email}:`, error.message);
-    }
+const sendResetEmail = async (email, link) => {
+    const email = 'fonora9793@acedby.com'
+    const subject = "Hello from SendGrid"
+    const template = '<strong>This is a test email sent via SendGrid using Node.js!</strong>'
+    await sendGridEmail(email,subject,template)
 }
 
 const resetPassword = async (req, res) => {
