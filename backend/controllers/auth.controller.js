@@ -2,7 +2,7 @@ const User = require("../models/auth.model");
 const bcrypt = require('bcryptjs');
 const { generateAccessToken } = require('../middlewares/authorization');
 const crypto = require('crypto');
-const { sendGridEmail } = require('../utils/index');
+const { emailSend } = require('../utils/index');
 const saltRounds = 10;
 
 const hashPassword = (password) => {
@@ -114,7 +114,7 @@ const forgotPassword = async (req, res) => {
         await user.save();
 
         const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-        await sendResetEmail(user.email, resetUrl);
+        await passwordResetEmail(user.email, resetUrl);
         return res.status(200).json({
             success: true,
             message: "Password reset link sent succesuccessfully. Please check your email.",
@@ -130,13 +130,13 @@ const forgotPassword = async (req, res) => {
     }
 }
 
-const sendResetEmail = async (email, link) => {
+const passwordResetEmail = async (email, link) => {
     const subject = "Hello from SendGrid"
     const template = 'password-reset.html'
     const context = {
         reset_link: link
     }
-    await sendGridEmail(email, subject, template, context)
+    await emailSend(email, subject, template, context)
 }
 
 const resetPassword = async (req, res) => {
