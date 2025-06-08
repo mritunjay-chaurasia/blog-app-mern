@@ -1,35 +1,30 @@
-const sgMail = require('@sendgrid/mail');
+import sgMail from '@sendgrid/mail';
+import path from 'path';
+import fs from 'fs/promises';
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-export const sendGridEmail = (email,subject,subject ,template) => {
+export const emailSend = async (email, subject, template, context = {}) => {
     try {
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        // Create an email object
+        const templatePath = path.resolve(`./templates/${template}`);
+        let temp = await fs.readFile(templatePath, 'utf-8');
+
+        // Replace placeholders with actual values
+        Object.keys(context).forEach(key => {
+            const placeholder = `{{${key}}}`;
+            temp = temp.replace(new RegExp(placeholder, 'g'), context[key]);
+        });
+
         const msg = {
-            to:    email,
-            from:  'sender@example.com',  // Replace with your verified sender email
+            to: email,
+            from: process.env.SENDGRID_FROM_EMAIL,
             subject: subject,
-            text:  'This is a test email sent via SendGrid using Node.js!',
-            html: template,
+            html: temp,
         };
-        // Send the email
-        sgMail
-            .send(msg)
-            .then(() => {
-                console.log('Email sent successfully!');
-            })
-            .catch((error) => {
-                console.error('Error sending email:', error);
-            });
 
+        await sgMail.send(msg);
+        console.log(`Email sent successfully to ${email}!`);
+    } catch (error) {
+        console.error(`Error sending email to ${email}:`, error.response ? error.response.body : error.message);
     }
-    catch (error) {
-        console.error(`Error during sending email to this ${email}`)
-    }
-}
-
-
-
-
-
-
+};
