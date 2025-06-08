@@ -113,12 +113,12 @@ const forgotPassword = async (req, res) => {
         user.resetPasswordExpires = resetTokenExpiry;
         await user.save();
 
-        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-        await passwordResetEmail(user.email, resetUrl);
+        const reset_link = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+        await passwordResetEmail(user.email, reset_link);
         return res.status(200).json({
             success: true,
             message: "Password reset link sent succesuccessfully. Please check your email.",
-            resetUrl
+            reset_link
         });
     }
     catch (error) {
@@ -130,11 +130,11 @@ const forgotPassword = async (req, res) => {
     }
 }
 
-const passwordResetEmail = async (email, resetUrl) => {
+const passwordResetEmail = async (email, reset_link) => {
     const subject = 'Reset Your Password'
     const template = 'password_reset.html'
     const context = {
-        reset_link: resetUrl
+        reset_link: reset_link
     }
     await emailSend(email, subject, template, context)
 }
