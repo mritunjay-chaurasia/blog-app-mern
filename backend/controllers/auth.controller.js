@@ -42,7 +42,7 @@ const register = async (req, res) => {
         const user = await User.create(userData)
         const token = await generateAccessToken(user._id)
 
-        return res.status(201).json({ success: true, message: "You registered successfuly", token })
+        return res.status(201).json({ success: true, message: "You registered successfuly",user:user._id, token })
     } catch (err) {
         const message = err?.message || "Internal server error during registration.";
         return res.status(500).json({ success: false, message: message, })
@@ -78,6 +78,7 @@ const login = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Login successful.",
+            user:existingUser._id,
             token
         });
     } catch (err) {
