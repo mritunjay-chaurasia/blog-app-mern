@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const { boolean } = require('joi');
 
 const userSchema = new mongoose.Schema({
     _id: {
@@ -35,6 +36,10 @@ const userSchema = new mongoose.Schema({
     userStatus: {
         type: String,
         default: 'active'
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false
     },
     isUpdateEmail: {
         type: Boolean,
