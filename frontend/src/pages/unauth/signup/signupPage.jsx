@@ -14,6 +14,10 @@ import { signup } from '../../../apis/user';
 import { useNavigate } from 'react-router-dom';
 import { showToast } from '../../../utils/notification';
 import { access_token } from '../../../constant';
+import { GoogleLogin } from 'react-google-login';
+import { socket } from '../../../../socket';
+const clientId = 'YOUR_CLIENT_ID.apps.googleusercontent.com';
+
 
 const SignupPage = () => {
     const temp = {
@@ -29,14 +33,45 @@ const SignupPage = () => {
     const [userInfo, setUserInfo] = useState(temp)
     const { errors } = useValidateMessage(userInfo)
     const navigate = useNavigate();
+
     const handleOnChange = (e) => {
         const { name, value } = e.target
         setUserInfo((prev) => ({ ...prev, [name]: value }))
     }
 
+    function googleAuthentication() {
+        console.log("inside googleAuthentication:::::::::")
 
-    const handleSubmit = async (e) => {
+    }
+
+    const fbAuthentication = () => {
+        console.log("inside fbAuthentication:::::::::")
+
+    }
+
+    const onSuccess = (res) => {
+        console.log('[Login Success] currentUser:', res.profileObj);
+    };
+    const onFailure = (res) => {
+        console.log('[Login failed] res:', res);
+    };
+
+
+    const handleSubmit = async (e, type) => {
         e.preventDefault()
+        switch (type) {
+            case "googleAuth":
+                googleAuthentication()
+                break;
+            case "fbAuth":
+                fbAuthentication()
+                break;
+            default:
+                simpleAuthentication()
+        }
+    }
+
+    async function simpleAuthentication() {
         if (Object.keys(errors).length > 0) {
             setErrorsMsg(errors)
             return
@@ -45,6 +80,8 @@ const SignupPage = () => {
         const response = await signup(userInfo);
         if (response?.success) {
             showToast("success", response.message)
+            console.log("Response::::::",response.users[0]._id)
+            socket.emit("joinMyRoom", response.users[0]._id);
             localStorage.setItem(access_token, response?.token)
             navigate('/dashboard')
         } else {
@@ -114,7 +151,7 @@ const SignupPage = () => {
                     width={"100%"}
                     type={"submit"}
                     borderRadius={"12px"}
-                    handleSubmit={handleSubmit}
+                    handleSubmit={(e) => handleSubmit(e)}
                     disabled={false}
 
                 />
@@ -127,7 +164,7 @@ const SignupPage = () => {
                 </Divider>
 
                 <Box sx={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: "15px" }}>
-                    <CustomButton
+                    {/* <CustomButton
                         label={"Sign up with Google"}
                         isLoading={false}
                         color={"black"}
@@ -136,9 +173,22 @@ const SignupPage = () => {
                         width={"100%"}
                         type={"submit"}
                         borderRadius={"12px"}
-                        handleSubmit={handleSubmit}
-                        disabled={true}
+                        handleSubmit={(e) => handleSubmit(e, "googleAuth")}
+                        disabled={false}
+                    /> */}
+
+
+                    <GoogleLogin
+                        clientId={clientId}
+                        buttonText="Login"
+                        onSuccess={onSuccess}
+                        onFailure={onFailure}
+                        cookiePolicy={'single_host_origin'}
+                        style={{ marginTop: '100px' }}
+                        isSignedIn={true}
                     />
+
+
                     <CustomButton
                         label={"Sign up with Facebook"}
                         isLoading={false}
@@ -148,8 +198,8 @@ const SignupPage = () => {
                         width={"100%"}
                         type={"submit"}
                         borderRadius={"12px"}
-                        handleSubmit={handleSubmit}
-                        disabled={true}
+                        handleSubmit={(e) => handleSubmit(e, "fbAuth")}
+                        disabled={false}
                     />
                 </Box>
 
