@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { socket } from "../../../socket";
+import { userInfo } from '../../apis/user';
 
-const ChatSection = ({ user }) => {
+const ChatSection = ({ user, currentUser }) => {
   const [messages, setMessages] = useState([]);
   const [msg, setMsg] = useState('');
 
+  useEffect(() => {
+    socket.on("receiveMessage", (data) => {
+      if (data.senderId === user._id) {
+        setMessages((prev) => [...prev, { sender: user.name, text: data.content }]);
+      }
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, [user]);
+
+
   const handleSend = () => {
     if (msg.trim()) {
-      // socket.emit('dashboard', response);
+      const messageData = {
+        senderId: currentUser._id,
+        receiverId: user._id,
+        content: msg,
+      };
+      socket.emit('sendMessage', messageData);
       setMessages([...messages, { sender: 'Me', text: msg }]);
       setMsg('');
     }
@@ -19,7 +38,7 @@ const ChatSection = ({ user }) => {
 
   return (
     <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column' }}>
-      <h3>Chat with {user.name}</h3>
+      <h3>Chat with {user.fullName}</h3>
       <div style={{ flex: 1, border: '1px solid #ccc', marginBottom: '10px', padding: '10px', overflowY: 'auto' }}>
         {messages.map((m, index) => (
           <div key={index} style={{ margin: '5px 0' }}>

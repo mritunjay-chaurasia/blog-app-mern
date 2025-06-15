@@ -10,6 +10,7 @@ import { showToast } from '../../../utils/notification';
 import { login } from '../../../apis/user';
 import { useNavigate } from 'react-router-dom';
 import { access_token } from '../../../constant';
+import { socket } from '../../../../socket';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -43,6 +44,7 @@ const LoginPage = () => {
         if (response?.success) {
             showToast("success", response.message)
             localStorage.setItem(access_token, response?.token)
+            socket.emit("joinMyRoom", response?.user);
             navigate('/dashboard')
         } else {
             showToast("error", response?.message)

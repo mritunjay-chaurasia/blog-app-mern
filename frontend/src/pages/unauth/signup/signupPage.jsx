@@ -14,9 +14,9 @@ import { signup } from '../../../apis/user';
 import { useNavigate } from 'react-router-dom';
 import { showToast } from '../../../utils/notification';
 import { access_token } from '../../../constant';
-import { GoogleLogin } from 'react-google-login';
+// import { GoogleLogin } from 'react-google-login';
 import { socket } from '../../../../socket';
-const clientId = 'YOUR_CLIENT_ID.apps.googleusercontent.com';
+// const clientId = 'YOUR_CLIENT_ID.apps.googleusercontent.com';
 
 
 const SignupPage = () => {
@@ -80,8 +80,7 @@ const SignupPage = () => {
         const response = await signup(userInfo);
         if (response?.success) {
             showToast("success", response.message)
-            console.log("Response::::::",response.users[0]._id)
-            socket.emit("joinMyRoom", response.users[0]._id);
+            socket.emit("joinMyRoom", response?.user);
             localStorage.setItem(access_token, response?.token)
             navigate('/dashboard')
         } else {
@@ -177,7 +176,7 @@ const SignupPage = () => {
                         disabled={false}
                     /> */}
 
-
+                    {/* 
                     <GoogleLogin
                         clientId={clientId}
                         buttonText="Login"
@@ -186,7 +185,7 @@ const SignupPage = () => {
                         cookiePolicy={'single_host_origin'}
                         style={{ marginTop: '100px' }}
                         isSignedIn={true}
-                    />
+                    /> */}
 
 
                     <CustomButton
