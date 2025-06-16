@@ -1,18 +1,26 @@
 
 const { io } = require('./server');
-const { Chat } = require('./models/chat.model');
-const { Message } = require('./models/message.model');
+const Chat = require('./models/chat.model');
+const Message = require('./models/message.model');
 
 io.on('connection', (socket) => {
     console.log('Client connected');
-    
+
     socket.on("joinMyRoom", (id) => {
         console.log("Received joinMyRoom for ID:", id);
         socket.join(id);
         console.log("Joined room:", [...socket.rooms]);
     });
 
+    socket.on("joinGroupRoom", (id) => {
+        console.log("Received joinGroupRoom for ID:", id);
+        socket.join(id);
+        console.log("Joined room:", [...socket.rooms]);
+    });
 
+
+
+    // 1-to-1 chat messages
     socket.on("sendMessage", async ({ senderId, receiverId, content }) => {
         // 1. Find or create chat between sender and receiver
         let chat = await Chat.findOne({
@@ -46,6 +54,35 @@ io.on('connection', (socket) => {
             sentAt: message.createdAt,
         });
     });
+
+    socket.on("sendGroupMessage", async ({ senderId, content, chatId }) => {
+        const chat = await Chat.findById(chatId).populate("participants");
+        if (!chat) return;
+
+        const message = await Message.create({
+            sender: senderId,
+            content,
+            chat: chatId
+        });
+
+        chat.lastMessage = message._id;
+        await chat.save();
+        // Emit to all members in group
+        chat.participants.forEach(user => {
+
+            if (user._id.toString() !== senderId) {
+                io.to(user._id.toString()).emit("receiveGroupMessage", {
+                    senderId,
+                    content,
+                    chatId,
+                    sentAt: message.createdAt,
+                    isGroup: chat.isGroupChat,
+                    chatName: chat.chatName
+                });
+            }
+        });
+    });
+
 
     socket.on('disconnect', () => {
         console.log('Client disconnected');

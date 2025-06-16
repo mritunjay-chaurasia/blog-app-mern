@@ -8,7 +8,7 @@ const generateAccessToken = async (id) => {
     return token
 };
 
-const authentication = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
     try {
         const authorization = req.headers.authorization
         if (!authorization) {
@@ -37,9 +37,9 @@ const authentication = async (req, res, next) => {
         if (error?.name === 'TokenExpiredError') {
             return res.status(401).json({ success: false, message: 'Token expired' });
         }
-        console.error('Authentication error:', error);
+        console.error('authMiddleware error:', error);
         return res.status(401).json({ success: false, message: "Unauthorized" })
     }
 };
 
-module.exports = { generateAccessToken, authentication };
+module.exports = { generateAccessToken, authMiddleware };
