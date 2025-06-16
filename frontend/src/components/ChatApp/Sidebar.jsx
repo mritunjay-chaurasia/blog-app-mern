@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Sidebar = ({ users, onUserSelect }) => {
+const Sidebar = ({ users, groups, onUserSelect, onGroupSelect }) => {
   return (
     <div style={{ width: '250px', borderRight: '1px solid #ccc', padding: '10px' }}>
       <h3>Users</h3>
@@ -24,6 +24,17 @@ const Sidebar = ({ users, onUserSelect }) => {
           </li>
         ))}
       </ul>
+      <hr />
+      <h3>Groups</h3>
+      {groups.map((group) => (
+        <div
+          key={group._id}
+          onClick={() => onGroupSelect(group)}
+          style={{ padding: "5px", cursor: "pointer" }}
+        >
+          {group.chatName}
+        </div>
+      ))}
     </div>
   );
 };

@@ -1,22 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { socket } from "../../../socket";
-import { userInfo } from '../../apis/user';
+import { fetchChat } from '../../apis/chat';
 
 const ChatSection = ({ user, currentUser }) => {
   const [messages, setMessages] = useState([]);
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
-    socket.on("receiveMessage", (data) => {
-      if (data.senderId === user._id) {
-        setMessages((prev) => [...prev, { sender: user.name, text: data.content }]);
+    (async () => {
+      const response = await fetchChat(user._id)
+      if (response.success) {
+        console.log("Chat response:::", response)
+        setMessages(response.messages)
       }
+    })()
+    socket.on("receiveMessage", (data) => {
+      if (data.senderId === user._id || data.senderId === currentUser._id) {
+        setMessages((prev) => [...prev, {
+          sender: data.senderId,
+          content: data.content,
+        }]);
+      }
+
     });
+
 
     return () => {
       socket.off("receiveMessage");
     };
-  }, [user]);
+  }, [user, socket]);
 
 
   const handleSend = () => {
@@ -27,7 +39,10 @@ const ChatSection = ({ user, currentUser }) => {
         content: msg,
       };
       socket.emit('sendMessage', messageData);
-      setMessages([...messages, { sender: 'Me', text: msg }]);
+      setMessages((prev) => [...prev, {
+        sender: currentUser._id,
+        content: msg,
+      }]);
       setMsg('');
     }
   };
@@ -39,16 +54,36 @@ const ChatSection = ({ user, currentUser }) => {
   return (
     <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column' }}>
       <h3>Chat with {user.fullName}</h3>
-      <div style={{ flex: 1, border: '1px solid #ccc', marginBottom: '10px', padding: '10px', overflowY: 'auto' }}>
-        {messages.map((m, index) => (
-          <div key={index} style={{ margin: '5px 0' }}>
-            <strong>{m.sender}: </strong>{m.text}
+      {messages.map((m, index) => {
+        const isMe = m.sender === currentUser._id;
+
+        return (
+          <div
+            key={index}
+            style={{
+              display: 'flex',
+              justifyContent: isMe ? 'flex-end' : 'flex-start',
+              marginBottom: '5px'
+            }}
+          >
+            <div
+              style={{
+                maxWidth: '60%',
+                padding: '10px',
+                borderRadius: '10px',
+                backgroundColor: isMe ? '#dcf8c6' : '#f1f0f0',
+                alignSelf: isMe ? 'flex-end' : 'flex-start',
+              }}
+            >
+              <div>{m.content}</div>
+            </div>
           </div>
-        ))}
-      </div>
+        );
+      })}
+
       <div style={{ display: 'flex', gap: '10px' }}>
         <input
-          type="text"
+          type="content"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
           placeholder="Type a message..."
