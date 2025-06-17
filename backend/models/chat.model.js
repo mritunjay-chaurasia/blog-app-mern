@@ -11,6 +11,14 @@ const chatSchema = new mongoose.Schema({
       ref: 'User'
     }
   ],
+  blocks: [{
+    type: String,
+    ref: 'User'
+  }],
+  deletes: [{
+    type: String,
+    ref: 'Message'
+  }],
   groupAdmin: { type: String, ref: 'User' },
   lastMessage: {
     type: mongoose.Schema.Types.ObjectId,
@@ -20,7 +28,8 @@ const chatSchema = new mongoose.Schema({
     type: String,
     required: function () { return this.isGroupChat; }
   },
-}, { timestamps: true }
+},
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('Chat', chatSchema);

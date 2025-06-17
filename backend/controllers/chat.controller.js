@@ -25,7 +25,7 @@ const createGroup = async (req, res) => {
     }
 };
 
-const fetchChat = async (req, res) => {
+const fetchChatMessages = async (req, res) => {
     try {
         const receiverId = req.query.receiverId
         const senderId = req.user._id
@@ -55,26 +55,58 @@ const fetchChat = async (req, res) => {
     }
 }
 
-const fetchUserGroups = async (req, res) => {
+const fetchGroups = async (req, res) => {
     try {
         const userId = req.user._id;
         const groups = await Chat.find({
             isGroupChat: true,
             participants: userId,
         }).select("_id chatName");
-
-        res.json({ success: true, groups });
+        res.status(200).json({ success: true, groups });
     } catch (err) {
+        console.error("Error during fetch user group", err)
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+const fetchChat = async (req, res) => {
+    try {
+        const receiverId = req.query.receiverId
+        const senderId = req.user._id
+        if (!receiverId || !senderId) {
+            return res.status(400).json({
+                success: false,
+                message: "Receiver ID are required.",
+            });
+        }
+        // Find or create chat between sender and receiver
+        let chat = await Chat.findOne({
+            isGroupChat: false,
+            participants: { $all: [senderId, receiverId], $size: 2 },
+        });
+
+        if (!chat) {
+            return res.status(204).json({ success: true, messages: "Chat not found" });
+        }
+
+        res.status(200).json({ success: true, chat });
+    } catch (err) {
+        console.error("Error during fetch user group", err)
         res.status(500).json({ success: false, message: err.message });
     }
 };
 
 const fetchGroupChatMessages = async (req, res) => {
-  const { chatId } = req.query;
-  const messages = await Message.find({ chat: chatId }).sort({ createdAt: 1 });
-  return res.status(200).json({ success: true, messages });
+    try {
+        const { chatId } = req.query;
+        const messages = await Message.find({ chat: chatId }).sort({ createdAt: 1 });
+        return res.status(200).json({ success: true, messages });
+    } catch (err) {
+        console.error("Error during fetchGroupChatMessages", err)
+        return res.status(500).json({ success: false, message: err.message });
+    }
 };
 
 
 
-module.exports = { createGroup, fetchChat, fetchUserGroups,fetchGroupChatMessages }
+module.exports = { createGroup, fetchChatMessages, fetchChat, fetchGroups, fetchGroupChatMessages }
