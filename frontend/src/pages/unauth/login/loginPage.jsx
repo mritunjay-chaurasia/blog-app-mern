@@ -7,10 +7,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { Link, Divider, Typography, Checkbox } from '@mui/material';
 import { useState } from 'react';
 import { showToast } from '../../../utils/notification';
-import { login } from '../../../apis/user';
+import { login } from '../../../apis/user.api';
 import { useNavigate } from 'react-router-dom';
 import { access_token } from '../../../constant';
-import { socket } from '../../../../socket';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -44,7 +43,6 @@ const LoginPage = () => {
         if (response?.success) {
             showToast("success", response.message)
             localStorage.setItem(access_token, response?.token)
-            socket.emit("joinMyRoom", response?.user);
             navigate('/dashboard')
         } else {
             showToast("error", response?.message)

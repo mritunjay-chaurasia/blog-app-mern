@@ -2,7 +2,7 @@ import CustomButton from '../../../components/CustomButton';
 import Box from '@mui/material/Box';
 import { useState } from 'react';
 import { showToast } from '../../../utils/notification';
-import { resetPassword } from '../../../apis/user';
+import { resetPassword } from '../../../apis/user.api.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import PasswordField from '../../../components/PasswordField';
 import DisplayErrorMessage from '../../../components/DisplayErrorMessage';

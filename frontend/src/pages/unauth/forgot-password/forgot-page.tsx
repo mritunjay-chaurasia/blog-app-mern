@@ -3,7 +3,7 @@ import InputTextField from '../../../components/TextFields';
 import Box from '@mui/material/Box';
 import { useState } from 'react';
 import { showToast } from '../../../utils/notification';
-import { forgotPassword } from '../../../apis/user';
+import { forgotPassword } from '../../../apis/user.api';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');

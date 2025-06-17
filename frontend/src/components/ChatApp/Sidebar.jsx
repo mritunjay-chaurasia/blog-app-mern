@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Sidebar = ({ users, groups, onUserSelect, onGroupSelect }) => {
+const Sidebar = ({ otherUsers, groups, onUserSelect, onGroupSelect }) => {
   return (
     <div style={{ width: '250px', borderRight: '1px solid #ccc', padding: '10px' }}>
       <h3>Users</h3>
       <ul style={{ listStyle: 'none', padding: 0 }}>
-        {users.map((user) => (
+        {otherUsers.map((user) => (
           <li
             key={user._id}
             onClick={() => onUserSelect(user)}

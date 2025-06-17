@@ -10,12 +10,11 @@ import 'react-phone-input-2/lib/style.css'
 import { useState } from 'react';
 import { useValidateMessage } from '../../../customHooks/useValidateMsg';
 import DisplayErrorMessage from '../../../components/DisplayErrorMessage';
-import { signup } from '../../../apis/user';
+import { signup } from '../../../apis/user.api';
 import { useNavigate } from 'react-router-dom';
 import { showToast } from '../../../utils/notification';
 import { access_token } from '../../../constant';
 // import { GoogleLogin } from 'react-google-login';
-import { socket } from '../../../../socket';
 // const clientId = 'YOUR_CLIENT_ID.apps.googleusercontent.com';
 
 
@@ -80,7 +79,6 @@ const SignupPage = () => {
         const response = await signup(userInfo);
         if (response?.success) {
             showToast("success", response.message)
-            socket.emit("joinMyRoom", response?.user);
             localStorage.setItem(access_token, response?.token)
             navigate('/dashboard')
         } else {

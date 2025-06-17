@@ -1,4 +1,4 @@
-import clientApis from './index'
+import clientApis from './index.api'
 
 const signup = async (data) => {
     try {

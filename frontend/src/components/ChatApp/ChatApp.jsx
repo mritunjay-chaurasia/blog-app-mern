@@ -1,41 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { socket } from "../../../socket";
-import { fetchChat } from '../../apis/chat';
+import { fetchChatMessages, fetchChat } from '../../apis/chat.api';
 
-const ChatSection = ({ user, currentUser }) => {
+const ChatSection = ({ selectedUser, currentUser }) => {
   const [messages, setMessages] = useState([]);
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
     (async () => {
-      const response = await fetchChat(user._id)
+      const response = await fetchChatMessages(selectedUser._id)
+      const chat = await fetchChat(selectedUser._id)
+      console.log("chat:::",chat)
       if (response.success) {
-        console.log("Chat response:::", response)
         setMessages(response.messages)
       }
     })()
+
+    socket.emit("joinMyRoom", selectedUser._id);
+
     socket.on("receiveMessage", (data) => {
-      if (data.senderId === user._id || data.senderId === currentUser._id) {
+      if (data.senderId === selectedUser._id || data.senderId === currentUser._id) {
         setMessages((prev) => [...prev, {
           sender: data.senderId,
           content: data.content,
         }]);
       }
-
     });
 
 
     return () => {
       socket.off("receiveMessage");
     };
-  }, [user, socket]);
+  }, [selectedUser, socket]);
 
 
   const handleSend = () => {
     if (msg.trim()) {
       const messageData = {
         senderId: currentUser._id,
-        receiverId: user._id,
+        receiverId: selectedUser._id,
         content: msg,
       };
       socket.emit('sendMessage', messageData);
@@ -47,13 +50,13 @@ const ChatSection = ({ user, currentUser }) => {
     }
   };
 
-  if (!user) {
+  if (!selectedUser) {
     return <div style={{ flex: 1, padding: '20px' }}>Select a user to start chatting</div>;
   }
 
   return (
     <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column' }}>
-      <h3>Chat with {user.fullName}</h3>
+      <h3>Chat with {selectedUser.fullName}</h3>
       {messages.map((m, index) => {
         const isMe = m.sender === currentUser._id;
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { allUsers, userInfo } from "../../apis/user";
-import { fetchGroups } from "../../apis/chat";
+import { allUsers, userInfo } from "../../apis/user.api";
+import { fetchGroups } from "../../apis/chat.api";
 import ChatSection from "../../components/ChatApp/ChatApp";
 import GroupChatSection from "../../components/ChatApp/GroupChatSection";
 import Sidebar from "../../components/ChatApp/Sidebar";
@@ -8,7 +8,7 @@ import Sidebar from "../../components/ChatApp/Sidebar";
 const DashboardPage = () => {
   const [selectedChat, setSelectedChat] = useState(null); // Can be user or group
   const [isGroupChat, setIsGroupChat] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [otherUsers, setOtherUsers] = useState([]);
   const [groups, setGroups] = useState([]);
   const [currentUser, setCurrentUser] = useState();
 
@@ -21,7 +21,7 @@ const DashboardPage = () => {
 
         if (re?.success && groupData?.success) {
           setCurrentUser(response.user);
-          setUsers(re.users.filter((u) => u._id !== response.user._id));
+          setOtherUsers(re.users.filter((u) => u._id !== response.user._id));
           setGroups(groupData.groups);
         }
       } catch (err) {
@@ -33,7 +33,7 @@ const DashboardPage = () => {
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <Sidebar
-        users={users}
+        otherUsers={otherUsers}
         groups={groups}
         onUserSelect={(user) => {
           setSelectedChat(user);
@@ -48,7 +48,7 @@ const DashboardPage = () => {
         isGroupChat ? (
           <GroupChatSection group={selectedChat} currentUser={currentUser} />
         ) : (
-          <ChatSection user={selectedChat} currentUser={currentUser} />
+          <ChatSection selectedUser={selectedChat} currentUser={currentUser} />
         )
       ) : (
         <div style={{ flex: 1, padding: "20px" }}>Select a user or group to chat</div>
