@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { socket } from "../../../socket";
 import { fetchGroupMessages } from "../../apis/chat.api";
+import ChatSectionArea from '../ChatSectionArea';
 
 const GroupChatSection = ({ group, currentUser }) => {
   const [messages, setMessages] = useState([]);
   const [msg, setMsg] = useState('');
+  const [typingTimeout, setTypingTimeout] = useState(null);
+  const [showTyping, setShowTyping] = useState(false)
 
   useEffect(() => {
     if (!group?._id) return;
 
     // Join group room via socket
-    socket.emit("joinGroupRoom", group._id);
+    socket.emit("joinGroup", group._id);
+
 
     // Fetch group messages
     (async () => {
       const response = await fetchGroupMessages(group._id);
-      console.log("response::",response)
+      console.log("response::", response)
       if (response.success) {
         setMessages(response.messages);
       }
@@ -23,7 +27,6 @@ const GroupChatSection = ({ group, currentUser }) => {
 
     // 3. Listen for new messages
     socket.on("receiveGroupMessage", (data) => {
-        console.log("receiveGroupMessage::",data)
       if (data.chatId === group._id) {
         setMessages((prev) => [...prev, {
           sender: data.senderId,
@@ -32,8 +35,24 @@ const GroupChatSection = ({ group, currentUser }) => {
       }
     });
 
+    socket.on("start-typing", (data) => {
+      if (data.receiverId === group._id && data.senderId !== currentUser._id) {
+        setShowTyping(true);
+      }
+    });
+
+    socket.on("stop-typing", (data) => {
+      if (data.receiverId === group._id && data.senderId !== currentUser._id) {
+        setShowTyping(false);
+      }
+    });
+
+
+
     return () => {
       socket.off("receiveGroupMessage");
+      socket.off("start-typing");
+      socket.off("stop-typing");
     };
   }, [group]);
 
@@ -55,6 +74,24 @@ const GroupChatSection = ({ group, currentUser }) => {
       setMsg('');
     }
   };
+  const handleOnChange = (e) => {
+    setMsg(e.target.value);
+    socket.emit("start-typing", {
+      senderId: currentUser._id,
+      receiverId: group._id,
+    });
+
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    const timeout = setTimeout(() => {
+      socket.emit("stop-typing", {
+        senderId: currentUser._id,
+        receiverId: group._id,
+      });
+    }, 1500);
+
+    setTypingTimeout(timeout);
+  };
 
   if (!group) {
     return <div style={{ flex: 1, padding: '20px' }}>Select a group to start chatting</div>;
@@ -63,44 +100,7 @@ const GroupChatSection = ({ group, currentUser }) => {
   return (
     <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column' }}>
       <h3>Group: {group.chatName}</h3>
-
-      <div style={{ flex: 1, overflowY: 'auto', marginBottom: '10px' }}>
-        {messages.map((m, index) => {
-          const isMe = m.sender === currentUser._id;
-          return (
-            <div
-              key={index}
-              style={{
-                display: 'flex',
-                justifyContent: isMe ? 'flex-end' : 'flex-start',
-                marginBottom: '5px'
-              }}
-            >
-              <div
-                style={{
-                  maxWidth: '60%',
-                  padding: '10px',
-                  borderRadius: '10px',
-                  backgroundColor: isMe ? '#cce5ff' : '#e6e6e6',
-                  alignSelf: isMe ? 'flex-end' : 'flex-start',
-                }}
-              >
-                <div>{m.content}</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div style={{ display: 'flex', gap: '10px' }}>
-        <input
-          value={msg}
-          onChange={(e) => setMsg(e.target.value)}
-          placeholder="Type a message..."
-          style={{ flex: 1, padding: '8px' }}
-        />
-        <button onClick={handleSend} style={{ padding: '8px 12px' }}>Send</button>
-      </div>
+      <ChatSectionArea messages={messages} currentUser={currentUser} handleSend={handleSend} handleOnChange={handleOnChange} msg={msg} showTyping={showTyping}/>
     </div>
   );
 };

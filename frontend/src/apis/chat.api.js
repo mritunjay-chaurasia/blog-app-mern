@@ -26,6 +26,17 @@ async function fetchChatMessages(receiverId) {
     }
 };
 
+const fetchChat = async (receiverId) => {
+    try {
+        const { data } = await clientApis.get(`/chat/chat?receiverId=${receiverId}`);
+        return data;
+    } catch (err) {
+        console.error("Error during fetchChat", err)
+        const errMsg = err?.response?.data
+        return { success: false, message: err.message || errMsg };
+    }
+};
+
 const fetchGroupMessages = async (chatId) => {
     try {
         const { data } = await clientApis.get(`/chat/group-messages?chatId=${chatId}`);
@@ -48,16 +59,7 @@ const fetchGroups = async () => {
     }
 };
 
-const fetchChat = async (receiverId) => {
-    try {
-        const { data } = await clientApis.get(`/chat/chat?receiverId=${receiverId}`);
-        return data;
-    } catch (err) {
-        console.error("Error during fetchChat", err)
-        const errMsg = err?.response?.data
-        return { success: false, message: err.message || errMsg };
-    }
-};
+
 
 export { createGroup, fetchChatMessages, fetchGroupMessages, fetchGroups, fetchChat }
 
