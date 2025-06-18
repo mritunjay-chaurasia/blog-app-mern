@@ -6,16 +6,18 @@ const Message = require('./models/message.model');
 io.on('connection', (socket) => {
     console.log('Client connected');
 
-    socket.on("joinMyRoom", (id) => {
-        console.log("Received joinMyRoom for ID:", id);
+    socket.on("joinRoom", (id) => {
+        console.log("Received joinRoom for ID:", id);
         socket.join(id);
         console.log("Joined room:", [...socket.rooms]);
     });
 
-    socket.on("joinGroupRoom", (id) => {
-        console.log("Received joinGroupRoom for ID:", id);
-        socket.join(id);
-        console.log("Joined room:", [...socket.rooms]);
+
+
+    socket.on("joinGroup", (chatId) => {
+        console.log("Received joinGroup for ID:", chatId);
+        socket.join(chatId);
+        console.log("Joined Group:", [...socket.rooms]);
     });
 
 
@@ -81,6 +83,15 @@ io.on('connection', (socket) => {
                 });
             }
         });
+    });
+
+
+    socket.on("start-typing", (data) => {
+        io.to(data.receiverId).emit('start-typing', data)
+    });
+
+    socket.on("stop-typing", (data) => {
+        io.to(data.receiverId).emit('stop-typing', data)
     });
 
 
