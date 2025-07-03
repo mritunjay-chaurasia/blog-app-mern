@@ -161,8 +161,10 @@ const resetPassword = async (req, res) => {
         }
 
         const hashedPassword = hashPassword(password);
-        // Update user password
+        // Update user password and clear reset token fields
         user.password = hashedPassword;
+        user.resetPasswordToken = null;
+        user.resetPasswordExpires = null;
         await user.save();
 
         console.info(`Password reset successful for user: ${user.email}`);
