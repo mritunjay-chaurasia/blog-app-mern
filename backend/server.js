@@ -46,6 +46,7 @@ server.listen(PORT, (err) => {
   }
 })
 
-require('./socket');
+const { initializeSocket } = require('./socket');
+initializeSocket(module.exports.io);
 
 

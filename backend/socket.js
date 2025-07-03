@@ -1,8 +1,8 @@
 
-const { io } = require('./server');
 const Chat = require('./models/chat.model');
 const Message = require('./models/message.model');
 
+const initializeSocket = (io) => {
 io.on('connection', (socket) => {
     console.log('Client connected');
 
@@ -98,4 +98,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Client disconnected');
     });
-})
+});
+};
+
+module.exports = { initializeSocket };
